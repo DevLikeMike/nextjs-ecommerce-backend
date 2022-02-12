@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tshirts",
+  "info": {
+    "singularName": "tshirt",
+    "pluralName": "tshirts",
+    "displayName": "Tshirts"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "Description": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "Name",
+      "required": true
+    },
+    "Price": {
+      "type": "decimal",
+      "default": 5,
+      "required": true
+    },
+    "inStock": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "photo": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "size": {
+      "type": "enumeration",
+      "enum": [
+        "Small",
+        "Medium",
+        "Large"
+      ]
+    }
+  }
+}
