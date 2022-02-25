@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
 /**
  *  tshirt controller
  */
 
-const { createCoreController } = require('@strapi/strapi').factories;
+const { createCoreController } = require("@strapi/strapi").factories;
 
-module.exports = createCoreController('api::tshirt.tshirt');
+module.exports = createCoreController("api::tshirt.tshirt");
