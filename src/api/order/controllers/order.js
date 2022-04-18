@@ -8,26 +8,35 @@ const { createCoreController } = require("@strapi/strapi").factories;
 
 module.exports = createCoreController("api::order.order", ({ strapi }) => ({
   // Get only orders that belong to user
-  //   async find(ctx) {
-  //     const user = ctx.state.user;
+  async findOne(ctx) {
+    const user = ctx.state.user;
 
-  //     let entities;
-  //     if (ctx.query._q) {
-  //       entities = await strapi.service("api::order.order").search({
-  //         ...ctx.query,
-  //         user: user.id,
-  //       });
-  //     } else {
-  //       entities = await strapi.service("api::order.order").find({
-  //         ...ctx.query,
-  //         user: user.id,
-  //       });
-  //     }
+    let entities;
+    if (ctx.query._q) {
+      entities = await strapi.service("api::order.order").search({
+        ...ctx.query,
+        user: user.id,
+      });
+    } else {
+      entities = await strapi.service("api::order.order").find({
+        ...ctx.query,
+        user: user.id,
+      });
+    }
 
-  //     return entities.map((entity) =>
-  //       sanitizeEntity(entity, { model: strapi.models.order })
-  //     );
-  //   },
+    return entities.map((entity) =>
+      sanitizeEntity(entity, { model: strapi.models.order })
+    );
+  },
+
+  async userOrders(ctx) {
+    const user = ctx.state.user;
+
+    let entities;
+    entities = await strapi.service("api::order.order").find({});
+
+    return entities;
+  },
 
   // Post request to strapi/orders - PAY ATTENTION TO S on the end!!!
   async create(ctx) {
@@ -66,10 +75,12 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
     const newOrder = await strapi.service("api::order.order").create({
       data: {
         user: user.id,
+        userID: user.id,
         product: 3,
         total: (session.amount_total / 100).toFixed(2),
         status: "unpaid",
         checkout_session: session.id,
+        receipt_url: null,
       },
     });
 
@@ -90,11 +101,20 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
 
     // If paid then update status, else throw 400 error with message
     if (session.payment_status === "paid") {
+      const payment_intent = await stripe.paymentIntents.retrieve(
+        `${session.payment_intent}`
+      );
+
+      console.log(payment_intent);
+
       const updateOrder = await strapi.entityService.update(
         "api::order.order",
         order[0].id,
         {
-          data: { status: "paid" },
+          data: {
+            status: "paid",
+            receipt_url: `${payment_intent.charges.data[0].receipt_url}`,
+          },
         }
       );
       order = await strapi

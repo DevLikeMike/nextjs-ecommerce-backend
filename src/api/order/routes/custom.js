@@ -6,5 +6,10 @@ module.exports = {
       path: "/orders/confirm",
       handler: "order.confirm",
     },
+    {
+      method: "GET",
+      path: "/orders/userOrders",
+      handler: "order.userOrders",
+    },
   ],
 };
