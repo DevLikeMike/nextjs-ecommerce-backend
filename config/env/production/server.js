@@ -1,4 +1,4 @@
-// Path: ./config/env/production/server.js`
+// Heroku deploy server
 
 module.exports = ({ env }) => ({
   url: env("MY_HEROKU_URL"),
